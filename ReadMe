@@ -1,0 +1,13 @@
+-------> 1. src\main\resources\SQL에 있는 파일로 DB설치
+
+-------> 2. c드라이브에 upload 폴더 생성 후 공유한 사진 넣기
+
+-------> 3. Servers - tomcat-users.xml 전체 지우고 다음 코드 복붙
+<?xml version="1.0" encoding="UTF-8"?>
+<tomcat-users version="1.0" xmlns="http://tomcat.apache.org/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd">
+  <role rolename="admin"/>
+  <user username="admin" password="1234" roles="admin"/>
+</tomcat-users>
+
+-------> 4. Servers프로젝트 - server.xml </host> 태그 안에다 다음 코드 추가
+<Context docBase="C:\upload" path="/img" reloadable="true"/>

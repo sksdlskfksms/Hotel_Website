@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HotelDAO">
+
+<!-- 호텔 등록 데이터 삽입 -->
+<insert id="insertHotel" parameterType="hotel">
+	<![CDATA[
+	insert into hotel(num,userid,username,hotelname,hotelcode,zipcode,address,
+	addressdetail,extraAddress,roomtype,hotelprice,oldcount,youngcount,
+	checkin,checkout,singlebed,doublebed,chkinfo,otherinfo,hit) 
+	values(tmp_seq1.NEXTVAL,#{userid},#{username},#{hotelname},#{hotelcode},#{zipcode},#{address},
+	#{addressdetail},#{extraAddress},#{roomtype},#{hotelprice},#{oldcount},#{youngcount},
+	#{checkin},#{checkout},#{singlebed},#{doublebed},#{chkinfocomma},#{otherinfo},#{hit})
+	   ]]>
+</insert>
+
+
+<!-- 호텔 목록 출력 -->
+<select id="selectListHotel" resultType="hotel">
+		select * 
+		from hotel 
+		<where>
+			<choose>
+				<when test="searchCondition!=null and searchCondition=='TITLE'">
+					TITLE
+				</when>
+				<when test="searchCondition!=null and searchCondition=='CONTENT'">
+					CONTENT
+				</when>
+			</choose>
+			<if test="searchKeyword!=null">
+				like '%'||#{searchKeyword}||'%'
+			</if>
+		</where>
+		order by num desc
+	</select>
+
+<select id="selectHotel" parameterType="hotel" resultType="hotel">
+		<![CDATA[
+			select * from hotel 
+			where num=#{num}
+		]]>
+</select>
+
+
+<update id="updateHotel" parameterType="hotel">
+		<![CDATA[
+		  update hotel
+		     set userid=#{userid},
+		         username=#{username},
+		         hotelname=#{hotelname},
+		         address=#{address},
+		         zipcode=#{zipcode},
+		         addressdetail=#{addressdetail},
+		         roomtype=#{roomtype},
+		         hotelprice=#{hotelprice},
+		         oldcount=#{oldcount}, 
+		         youngcount=#{youngcount}, 
+		         checkin=#{checkin}, 
+		         checkout=#{checkout}, 
+		         singlebed=#{singlebed},
+		         doublebed=#{doublebed},
+		         chkinfo=#{chkinfo},
+		         otherinfo=#{otherinfo}
+		   where num=#{num}
+		]]>
+	</update>
+	
+	<update id="updateCount" parameterType="hotel">
+		 <![CDATA[
+		  update hotel set hit=hit+1 where num=#{num}
+		 ]]>
+			</update>
+
+<delete id="deleteHotel" parameterType="hotel">
+		 <![CDATA[
+		  delete from hotel where num=#{num} 
+		 ]]>
+	</delete>
+
+<!-- max시퀀스 구하기 -->
+<select id="selectSeq" resultType="string">
+<![CDATA[
+	select TO_CHAR(max(num)+1) from hotel
+]]>
+</select>
+
+
+<!-- 등록한 호텔의 첫 번째 이미지 출력 -->
+<select id="getHotelImg" resultType="string">
+<![CDATA[
+	select org_file_name from hotel
+	inner join tb_file
+	on hotel.num = tb_file.idx
+	where rownum=1
+]]>
+</select>
+
+<!-- 등록한 호텔의 모든 이미지 출력(다중 이미지 처리) *(다수 row data xml : resultType="string" // method : List<String>으로 받아서 처리함) -->
+<select id="getHotelImgs" parameterType="hotel" resultType="string">
+<![CDATA[
+	select org_file_name from hotel
+	left outer join tb_file
+	on hotel.num = tb_file.idx
+	where hotel.num = #{num}
+]]>
+</select>
+
+<select id="selectSearchHotel" parameterType="com.spring.biz.hotel.HotelSearchVO" resultType="com.spring.biz.hotel.HotelVO">
+<![CDATA[
+	select  distinct address, hotelname ,hotelcode
+	from hotel
+	where hotelname like '%'||#{hotelname}||'%'
+]]>
+</select>
+
+
+<select id="selectHotelcode" resultType="string">
+<![CDATA[
+select TO_CHAR(max(TO_NUMBER(substr(hotelcode,2))+1)) as hotelcode from hotel
+]]>
+</select>
+
+
+<insert id="insertFile" parameterType="hashmap">
+		<![CDATA[
+			insert into tb_file values (#{P_CODE},#{ORG_FILE_NAME})
+		]]>
+</insert>
+
+	
+	<sql id="selectCriteria">
+		<where>
+			<choose>
+				<when test="type=='hotelname'">
+					hotelname like '%'||#{keyword}||'%'
+				</when> 
+				<when test="type=='address'">
+					address like '%'||#{keyword}||'%'
+				</when>
+			</choose>
+		</where>
+	</sql>
+	
+	<select id="getTotalCount" parameterType="hotel" resultType="int">
+		<![CDATA[
+		select count(*)
+		  from hotel
+		]]>
+		<include refid="selectCriteria"></include>
+	</select>
+	
+	<select id="getListWithPaging" resultType="hotel" parameterType="hotel">
+		<![CDATA[
+		select *
+		  from (select rownum rn, b.* from
+		         (select * from hotel left outer join
+		         	(select idx, min(org_file_name) org_file_name from tb_file group by idx) a
+					on hotel.num = a.idx
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by num desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+	
+	<!-- 메인페이지 검색 -> 호텔 리스트 출력 -->
+	<select id="getListWithPagingMain" resultType="hotel" parameterType="hotel">
+		<![CDATA[
+		select *
+		  from (select rownum rn, b.*
+		           from
+		         (select * from hotel
+				left outer join (select idx, min(org_file_name) org_file_name from tb_file group by idx) a
+					on hotel.num = a.idx
+					where 
+ 					(checkin <= TO_DATE(#{checkin}) and TO_DATE(#{checkout}) <= checkout)
+					AND (address like '%'||#{location}||'%' or addressdetail like '%'||#{location}||'%' or extraAddress like '%'||#{location}||'%')
+ 					AND oldcount >= #{oldcount}
+ 					AND youngcount <= #{youngcount}
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by num desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+	
+	<select id="getHotelListmy" resultType="hotel" parameterType="hotel">
+		<![CDATA[
+		select *
+		  from (select rownum rn, b.* from
+		         (select * from hotel left outer join
+		         	(select idx, min(org_file_name) org_file_name from tb_file group by idx) a
+					on hotel.num = a.idx
+					where userid= #{userid}
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by num desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+
+</mapper>

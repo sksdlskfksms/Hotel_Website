@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BookingsDAO">
+	<resultMap type="bookings" id="bookingsIncludeHotel">
+		<id property="booking_id" column="booking_id"/>
+		<result property="hotel_num" column="hotel_num"/>
+		<result property="user_id" column="user_id"/>
+		<result property="guest_name" column="guest_name"/>
+		<result property="guest_email" column="guest_email"/>
+		<result property="adult" column="adult"/>
+		<result property="child" column="child"/>
+		<result property="checkin" column="checkin"/>
+		<result property="checkout" column="checkout"/>
+		<result property="booking_date" column="booking_date" />
+		<result property="state" column="state" />
+		<collection property="hotel" resultMap="hotel" />
+	</resultMap>
+	
+	<resultMap type="hotel" id="hotel">
+		<id property="num" column="num" />
+		<result property="hotelname" column="hotelname" />
+		<result property="roomtype" column="roomtype" />
+		<result property="zipcode" column="zipcode" />
+		<result property="address" column="address" />
+		<result property="addressdetail" column="addressdetail" />
+		<result property="extraAddress" column="extraAddress" />
+		<result property="hotelprice" column="hotelprice" />
+		<result property="org_file_name" column="org_file_name" />
+	</resultMap>
+	
+	<sql id="selectCriteria">
+		SELECT b.booking_id, b.hotel_num, b.user_id,b.guest_name,
+			   b.guest_email, b.adult, b.child,
+			   TO_CHAR(b.checkin,'YYYY"년 "MM"월 "DD"일"') checkin,
+			   TO_CHAR(b.checkout,'YYYY"년 "MM"월 "DD"일"') checkout,
+			   TO_CHAR(b.booking_date,'YYYY"년 "MM"월 "DD"일"') booking_date, b.state, 
+			   h.num, h.hotelcode, h.hotelname, h.zipcode, h.address, 
+			   h.addressdetail,h.extraAddress,h.roomtype, h.hotelprice, t.org_file_name
+	</sql>
+	
+	<sql id="join">
+		JOIN hotel h 
+ 		ON b.hotel_num = h.num
+ 		LEFT OUTER JOIN (select idx, min(org_file_name) org_file_name from tb_file group by idx) t
+		ON h.num = t.idx
+	</sql>
+	
+	<!-- 예약  예정 리스트 보기 -->
+	<select id="getBookingsList" parameterType="bookings" resultMap="bookingsIncludeHotel">
+		<include refid="selectCriteria"></include>
+		FROM (select * from bookings where checkin >= TO_CHAR(SYSDATE, 'YYYYMMDD') AND state = '예정') b
+ 		<include refid="join"></include>
+		ORDER BY checkin
+	</select>
+	
+	<!-- 예약 완료 리스트 보기 -->
+	<update id="stateUpdate" parameterType="bookings">
+		<![CDATA[
+		 update bookings set state='완료' where checkin < TO_CHAR(SYSDATE, 'YYYYMMDD') and state = '예정'
+		 ]]>
+	</update>
+	<select id="getCompleteList" parameterType="bookings" resultMap="bookingsIncludeHotel">
+		<include refid="selectCriteria"></include>
+ 		<![CDATA[
+ 		FROM (select * from bookings WHERE state = '완료') b
+		]]>
+ 		<include refid="join"></include>
+		ORDER BY checkin
+	</select>
+	
+	<!-- 예약 취소 리스트 보기 -->
+	<select id="getCancleList" parameterType="bookings" resultMap="bookingsIncludeHotel">
+		<include refid="selectCriteria"></include>
+ 		FROM (select * from bookings WHERE state = '취소') b
+ 		<include refid="join"></include>
+		ORDER BY checkin
+	</select>
+	
+	<!-- 예약번호로 검색 및 상세보기  -->
+	<select id="searchBookingId" parameterType="int" resultMap="bookingsIncludeHotel">
+ 		<include refid="selectCriteria"></include>
+ 		FROM (select * from bookings WHERE booking_id = #{bookingId}) b
+ 		<include refid="join"></include>
+ 	</select>
+	
+	<!-- 예약 취소  -->
+	<update id="cancleBooking" parameterType="bookings">
+		 update bookings set state='취소', booking_date = sysdate where booking_id = #{bookingId} 
+	</update>
+	
+	<!-- 예약 날짜 변경  -->
+	<update id="updateCheckin" parameterType="java.util.HashMap">
+		 update bookings 
+		 set checkin = TO_Date(#{checkin},'YYYY-MM-DD'), 
+		 	 checkout = TO_Date(#{checkout},'YYYY-MM-DD')
+		 where booking_id = #{bookingId}
+	</update>
+	
+	<!-- 예약 투숙객 정보 변경  -->
+	<update id="updateGuest" parameterType="java.util.HashMap">
+		 update bookings set guest_name=#{guest_name}, guest_email=#{guest_email} where booking_id=#{bookingId} 
+	</update>
+	
+	<!--선진 : 특정 예약 리스트 보기 -->
+	<select id="getCalRevs" parameterType="bookings" resultMap="bookingsIncludeHotel">
+		select 
+		*
+		from bookings
+		where user_id=#{user_id} and (#{checkinDate} between checkin and checkout)
+	</select>
+	
+	<!--선진 : 예약 리스트 보기(예전 버전) -->
+	<select id="getBookingsListBefore" parameterType="bookings" resultMap="bookingsIncludeHotel">
+		SELECT b.booking_id, b.user_id,
+			   TO_CHAR(b.checkin,'YYYY"년 "MM"월 "DD"일"') checkin,
+			   TO_CHAR(b.checkout,'YYYY"년 "MM"월 "DD"일"') checkout,
+			   TO_CHAR(b.booking_date,'YYYY"년 "MM"월 "DD"일"') booking_date, b.state,
+			   h.hotelname, h.address, h.hotelprice
+ 		FROM bookings b
+ 		JOIN hotel h 
+ 		ON b.hotel_num = h.num
+	</select>
+	
+	<insert id="insertCardInfo" parameterType="com.spring.biz.myPage.CardVO">
+		insert into card 
+		values(#{userid},#{card_name},#{card_num1},#{card_num2},
+		#{card_num3},#{card_num3},#{card_month},#{card_year},#{card_pwd},#{owner_name})
+	</insert>
+	
+</mapper>

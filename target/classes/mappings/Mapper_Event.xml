@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EventDAO">
+	<insert id="insertEvent" parameterType="event">
+		insert into event 
+		values((select nvl(max(seq),0)+1 from event),
+				#{title},#{writer},#{content},sysdate,0)
+	</insert>
+
+	<select id="selectListEvent" resultType="event">
+		select * from event
+		<where>
+			<choose>
+				<when test="searchCondition!=null and searchCondition=='TITLE'">
+					TITLE
+				</when>
+				<when test="searchCondition!=null and searchCondition=='CONTENT'">
+					CONTENT
+				</when>
+			</choose>
+			<if test="searchKeyword!=null">
+				like '%'||#{searchKeyword}||'%'
+			</if>
+		</where>
+		order by seq desc
+	</select>
+
+
+	<select id="selectEvent" parameterType="event" resultType="event">
+		<![CDATA[
+			select * from event 
+			where seq=#{seq}
+		]]>
+	</select>
+
+	<update id="updateEvent" parameterType="event">
+		<![CDATA[
+		  update event 
+		     set title=#{title},
+		         writer=#{writer}, 
+		         content=#{content}
+		   where seq=#{seq}
+		]]>
+	</update>
+
+	<update id="updateCount" parameterType="event">
+		 <![CDATA[
+		  update event set cnt=cnt+1 where seq=#{seq}    
+		 ]]>
+			</update>
+		
+			<delete id="deleteEvent" parameterType="event">
+		 <![CDATA[
+		  delete from event where seq=#{seq} 
+		 ]]>
+	</delete>
+
+	<sql id="selectCriteria">
+		<where>
+			<choose>
+				<when test="type=='TITLE'">
+					title like '%'||#{keyword}||'%'
+				</when>
+				<when test="type=='CONTENT'">
+					content like '%'||#{keyword}||'%'
+				</when>
+			</choose>
+		</where>
+	</sql>
+
+	<select id="getTotalCount" parameterType="event" resultType="int">
+		<![CDATA[
+		select count(*)
+		  from event
+		]]>
+		<include refid="selectCriteria"></include>
+	</select>
+
+
+	<select id="getListWithPaging" resultType="event" parameterType="event">
+		<![CDATA[
+		select seq,title,writer, content,regdate,cnt 
+		  from (select rownum rn, b.*
+		           from
+		         (select * 
+		            from event
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by seq desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+
+
+</mapper>

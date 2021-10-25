@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="NoticeDAO">
+	<insert id="insertNotice" parameterType="notice">
+		insert into notice 
+		values((select nvl(max(seq),0)+1 from notice),
+				#{title},#{writer},#{content},sysdate,0)
+	</insert>
+
+	<select id="selectListNotice" resultType="notice">
+		select * from notice
+		<where>
+			<choose>
+				<when test="searchCondition!=null and searchCondition=='TITLE'">
+					TITLE
+				</when>
+				<when test="searchCondition!=null and searchCondition=='CONTENT'">
+					CONTENT
+				</when>
+			</choose>
+			<if test="searchKeyword!=null">
+				like '%'||#{searchKeyword}||'%'
+			</if>
+		</where>
+		order by seq desc
+	</select>
+
+
+	<select id="selectNotice" parameterType="notice" resultType="notice">
+		<![CDATA[
+			select * from notice 
+			where seq=#{seq}
+		]]>
+	</select>
+
+	<update id="updateNotice" parameterType="notice">
+		<![CDATA[
+		  update notice 
+		     set title=#{title},
+		         writer=#{writer}, 
+		         content=#{content}
+		   where seq=#{seq}
+		]]>
+	</update>
+
+	<update id="updateCount" parameterType="notice">
+		 <![CDATA[
+		  update notice set cnt=cnt+1 where seq=#{seq}
+		 ]]>
+			</update>
+		
+			<delete id="deleteNotice" parameterType="notice">
+		 <![CDATA[
+		  delete from notice where seq=#{seq} 
+		 ]]>
+	</delete>
+
+	<sql id="selectCriteria">
+		<where>
+			<choose>
+				<when test="type=='TITLE'">
+					title like '%'||#{keyword}||'%'
+				</when>
+				<when test="type=='CONTENT'">
+					content like '%'||#{keyword}||'%'
+				</when>
+			</choose>
+		</where>
+	</sql>
+
+	<select id="getTotalCount" parameterType="notice" resultType="int">
+		<![CDATA[
+		select count(*)
+		  from notice
+		]]>
+		<include refid="selectCriteria"></include>
+	</select>
+
+
+	<select id="getListWithPaging" resultType="notice" parameterType="notice">
+		<![CDATA[
+		select seq,title,writer, content,regdate,cnt 
+		  from (select rownum rn, b.*
+		           from
+		         (select * 
+		            from notice
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by seq desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+
+
+
+</mapper>

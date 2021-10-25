@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="QnADAO">
+	<sql id="selectCriteria">
+			<where>
+				<choose>
+					<when test="type=='TITLE'">
+						title like '%'||#{keyword}||'%'
+					</when>
+					<when test="type=='CONTENT'">
+						content like '%'||#{keyword}||'%'
+					</when>
+				</choose>
+			</where>
+	</sql>
+	
+	<insert id="insertQnA" parameterType="qna">
+		insert into
+		qna(seq,originSeq,title,writer,content)
+		values((select nvl(max(seq),0)+1 from qna),
+					(select nvl(max(originSeq),0)+1 from (select * from qna where originNo = 0)),
+					#{title},#{writer},#{content})
+	</insert>
+	
+	<select id="selectListQnA" resultType="qna">
+		select * from qna
+		ORDER BY DECODE(ORIGINNO,0,SEQ,ORIGINNO) DESC , GROUPORD asc
+	</select>
+
+	<select id="selectQnA" parameterType="qna" resultType="qna">
+			select * from qna
+			where seq=#{seq}
+	</select>
+
+	<update id="updateQnA" parameterType="qna">
+		  update qna 
+		     set title=#{title},
+		         writer=#{writer}, 
+		         content=#{content}
+		   where seq=#{seq}
+	</update>
+
+	<update id="updateCount" parameterType="qna">
+		  update qna set cnt=cnt+1 where seq=#{seq}
+	</update>
+
+	<delete id="deleteQnA" parameterType="qna">
+		  delete from qna where seq=#{seq} 
+	</delete>
+
+	<select id="getTotalCount" parameterType="qna" resultType="int">
+		select count(*)
+		  from qna
+		<include refid="selectCriteria"></include>
+	</select>
+
+	<select id="getListWithPaging" resultType="qna" parameterType="qna">
+		<![CDATA[
+		select seq,title,writer, content,regdate,cnt 
+		  from (select rownum rn, b.*
+		           from
+		         (select * 
+		            from qna
+		           ]]>
+		<include refid="selectCriteria"></include>
+		<![CDATA[  order by seq desc
+		          ) b
+		         where        
+		          rownum <=#{pageNum} * #{amount}
+		        )
+		 where rn > (#{pageNum}-1)*#{amount}
+		   ]]>
+	</select>
+
+	
+	<!--  답글 등록 -->
+	<insert id="insertRefQnA" parameterType="qna">
+		insert into
+		qna(seq,originNo,groupord,title,writer,content)
+		values((select nvl(max(seq),0)+1 from qna),#{originNo},#{groupOrd}+1,#{title},#{writer},#{content})
+	</insert>
+
+	<!--  답글 수정 --> 
+	<update id="updateRefQnA" parameterType="qna">
+		update qna set groupOrd = groupOrd + 1
+		where originNo = #{originNo} and groupOrd > #{groupOrd}
+	</update>
+
+</mapper>

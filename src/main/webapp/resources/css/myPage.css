@@ -1,0 +1,406 @@
+li {
+	list-style: none;
+}
+
+ol, ul {
+	margin-top: 0;
+	list-style: none;
+	outline: 0;
+	padding: 0;
+}
+
+label {
+	max-width: 100%;
+	font-weight: 700;
+	font-size: 15px;
+}
+
+.container {
+	width: 1100px;
+	padding: 0;
+}
+
+/* 왼쪽 메뉴바  */
+.menu-left {
+	display: table-cell;
+	vertical-align: top;
+	width: 218px;
+	background: linear-gradient(90deg, #f8f7f9, #fff);
+	box-shadow: 7px 0 8px #e9ebee;
+}
+
+.menu-left section.menu-section {
+	min-width: 280px;
+	margin-left: -55px;
+	margin-top: 21px;
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 3.25;
+	display: block;
+}
+
+.container .menu-left li.menu-active {
+	border-right-color: #003580;
+	border-right: 3px solid;
+	background-color: #f8f7f9;
+	display: block;
+}
+
+.menu-left li a {
+	display: block;
+	min-height: 60px;
+	cursor: pointer;
+	padding-left: 15px;
+	font-size: 18px;
+	color: #003580;
+}
+
+.menu-left li.menu-inactive a:hover {
+	background-color: #003580;
+	color: #fff;
+}
+
+.menu-left li a i {
+	padding-right: 10px;
+}
+
+/*------------------------- 예약관리 페이지  -------------------------*/
+.main {
+	display: table-cell;
+	width: 100%;
+	padding-left: 49px;
+	padding-bottom: 80px;
+	padding-top: 192px;
+}
+
+.filter-Section {
+	width: 100%;
+	float: left;
+}
+
+.filter-container {
+	float: left;
+	margin-bottom: 30px;
+}
+
+.filter-container .filter-option.active {
+	background: #003580;
+	color: #fff;
+	cursor: default;
+}
+
+.filter-container .filter-option {
+	border-bottom-color: #003580;
+	font-size: 16px;
+	font-weight: 700;
+	display: inline-block;
+	text-align: center;
+	padding: 8px 16px;
+	border-bottom: 2px solid;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+	width: 128px;
+}
+
+.filter-container .filter-option:hover {
+	background: #003580;
+	color: #fff;
+	border-bottom-color: #dddfe2;
+}
+
+.search-container {
+	font-size: 14px;
+	text-align: left;
+	display: block;
+	clear: both;
+}
+
+.search {
+	width: 50%;
+	margin-right: 8px;
+	margin-left: 0px;
+	display: inline-block;
+	flex-wrap: wrap;
+	align-items: flex-start;
+}
+
+.search input {
+	width: 330px;
+	height: 40px;
+}
+
+.search-container button {
+	height: 40px;
+}
+
+.booking-list {
+	float: left;
+	margin-left: -15px;
+}
+
+.booking-list .list-header {
+	float: left;
+	width: 100%;
+	height: 30px;
+	margin-top: 35px;
+}
+
+.list-header-left {
+	display: inline-block;
+	margin-left: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	height: 30px;
+	line-height: 22px;
+	vertical-align: middle;
+}
+
+.list-header-right {
+	float: right;
+}
+
+.booking-list-main {
+	margin-left: 45px;
+	width: 800px;
+	margin-top: 26px;
+}
+
+.list-main-card {
+	margin-top: -100px;
+	float: left;
+	height: 275px;
+	box-shadow: 0 4px 10px 0 #bec2c9;
+	transition: box-shadow .3s ease;
+	background: #fff;
+	cursor: text;
+	user-select: auto;
+}
+
+.hotel-picture {
+	vertical-align: top;
+	float: left;
+}
+
+.hotel-picture figure img {
+	object-fit: cover;
+	height: 221px;
+	width: 231px;
+}
+
+.info-container {
+	width: 569px;
+	float: right;
+	min-height: 221px;
+	height: 222px;
+	border-bottom: 1px solid;
+	border-bottom-color: #bec2c9;
+}
+
+.hotel-title {
+	vertical-align: top;
+	padding-top: 16px;
+	padding-left: 11px;
+	margin-bottom: 3px;
+	font-weight: 700;
+	font-size: 18px;
+}
+
+.info-title {
+	margin-left: 23px;
+}
+
+.info {
+	margin-left: 9px;
+}
+
+.booking-price {
+	padding: 16px;
+	float: right;
+}
+
+.price-currency {
+	float: left;
+	margin-top: 4px;
+}
+
+.price-ammount {
+	color: #e12d2d;
+	font-size: 25px;
+	float: right;
+	margin-right: 3px;
+	color: #e12d2d;
+}
+
+.bottom-left {
+	float: left;
+	width: 80%;
+	padding-left: 20px;
+}
+
+.bottom-right {
+	margin-right: 12px;
+	float: right;
+	margin-top: -7px;
+}
+
+/*------------------------- 캘린더 페이지 -------------------------*/
+table#content{
+	width:100%;
+	cellspacing:0;
+	cellpadding:0;
+}
+table#content th{
+	width: 100px;
+	text-align: center;
+}
+table#content td{
+	height: 100px;
+	padding: 0px;
+}
+
+#title{
+	width:100%;
+	height: 81px;
+	text-align: center;
+	background: #F3F9D7;
+	border:1px solid #CED99C;
+	padding: 10px 0;
+	float:right;
+}
+/*------------------------- 예약 상세 페이지 -------------------------*/
+.main-block{
+	background-color: #fff;
+    box-shadow: 0 4px 10px 0 #bec2c9;
+    font-size: 14px;
+    margin-bottom: 16px;
+    padding: 22px 22px 67px 67px;
+}
+.title-section{
+	padding: 0px;
+	display: block;
+	margin-bottom: 30px;
+}
+.title-section .title {
+    color: #396fc6;
+    line-height: 1.59;
+    margin: 0;
+}
+img.hotelImg {
+    display: inline-block;
+    vertical-align: top;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+.info-part {
+    width: 627px;
+    margin-top: 8px;
+    float: right;
+}
+.info-section {
+	padding: 0px;
+    padding-right: 4px;
+    padding-left: 20px;
+}
+.info-section h5 {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 2;
+    margin: 0;
+    padding: 4px;
+    display: inline-block;
+    width: 169px;
+    vertical-align: top;
+}
+.info-content {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 2;
+    display: inline-block;
+    padding: 4px;
+    width: 277px;
+}
+a.atag {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+    float: right;
+    width: 160px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: -31px;
+}
+div.group-label {
+    padding: 4px;
+    display: inline-block;
+    width: 169px;
+    vertical-align: top;
+}
+hr.half-section {
+    width: 440px;
+    float: right;
+}
+.payment-section{
+	padding: 0px;
+}
+.payment-section, .content-payment{
+    padding-left: 180px;
+}
+.price {
+    float: right;
+    text-align: right;
+}
+.currency {
+    display: inline-block;
+    padding: 3px 0;
+}
+.room {
+    float: left;
+    width: 60%;
+    padding: 3px 0;
+}
+.price.priceBold {
+    font-weight: 700;
+    vertical-align: bottom;
+    padding-top: 4px;
+    font-size: 18px;
+    line-height: 28px;
+}
+.price-footnote p {
+    padding-top: 8px;
+    font-size: 12px;
+    margin-bottom: -5px;
+}
+.content-payment .cardDiv {
+    width: 100%;
+}
+.content-payment .card-label {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+    float: left;
+}
+.content-payment .card-value {
+    width: 50%;
+    display: inline-block;
+    text-align: right;
+}
+.cancle {
+    font-size: 12px;
+    line-height: 1.33;
+    width: 400px;
+    margin-top: 4px;
+    padding-top: 8px;
+    float: left;
+}
+.form-control{
+	float: left;
+	width: 63%;
+}
+#addDate, #addGuest2{
+	width: 430px;
+}

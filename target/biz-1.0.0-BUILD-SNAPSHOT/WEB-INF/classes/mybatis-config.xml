@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+     <typeAlias type="com.spring.biz.user.UserVO" alias="user"/>
+     <typeAlias type="com.spring.biz.hotel.HotelVO" alias="hotel"/>
+     <typeAlias type="com.spring.biz.myPage.BookingsVO" alias="bookings"/>
+     <typeAlias type="com.spring.biz.myPage.CalVO" alias="cal"/>   
+     <typeAlias type="com.spring.biz.board.NoticeVO" alias="notice"/>
+     <typeAlias type="com.spring.biz.board.EventVO" alias="event"/>
+     <typeAlias type="com.spring.biz.board.QnAVO" alias="qna"/> 
+	</typeAliases>
+	<mappers>
+		<mapper resource="mappings/Mapper_user.xml" />
+		<mapper resource="mappings/Mapper_hotel.xml"/>
+		<mapper resource="mappings/Mapper_bookings.xml" />
+		<mapper resource="mappings/Mapper_cal.xml" />
+		<mapper resource="mappings/Mapper_Notice.xml" />
+		<mapper resource="mappings/Mapper_Event.xml" />
+		<mapper resource="mappings/Mapper_QnA.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CalDAO">
+<select id="getCal" parameterType="cal" resultType="cal">
+<![CDATA[
+ select * from cal_table where id=#{id} and startYear=#{startYear} and  startMonth=#{startMonth} and hotelName=#{hotelName} 
+]]>  
+</select>
+
+<select id="searchCal" parameterType="cal" resultType="cal">
+<![CDATA[
+  select * from cal_table where id=#{id} and startYear=#{startYear} and  startMonth=#{startMonth} and hotelName=#{hotelName}
+]]>  
+</select>
+
+<insert id="setCal" parameterType="cal">
+<![CDATA[
+ insert into cal_table values(#{id},#{hotelName},#{TypeSelect},#{startYear},#{startMonth},#{startDate},
+ #{yearSelect},#{monthSelect},#{dateSelect},#{reservationMemo})
+]]>
+</insert>
+
+
+<select id="getResvCont" parameterType="cal" resultType="cal">
+<![CDATA[
+select * from cal_table where id=#{id} and startYear=#{startYear} and startMonth=#{startMonth} and hotelName=#{hotelName}
+and ( #{resvDate} between startDate and dateSelect) 
+]]>
+</select>
+
+<select id="gethotelnamelist" parameterType="cal" resultType="cal">
+<![CDATA[
+ select distinct hotelName from cal_table where id=#{id}
+]]>  
+</select>
+</mapper>
