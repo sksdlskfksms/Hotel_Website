@@ -1,13 +1,57 @@
--------> 1. src\main\resources\SQL에 있는 파일로 DB설치
+# [프로젝트] 주식 정보 웹서비스
 
--------> 2. c드라이브에 upload 폴더 생성 후 공유한 사진 넣기
+## 🤔 기획 내용
+#### AI가 추천하는 주식 종목과 그 정보들을 매 주 문자로 제공 받을 수 있는 서비스를 가입 및 해지하는 웹서비스
+ <img src="https://user-images.githubusercontent.com/93129951/188328511-6f7d6694-4228-4522-b3b7-eaad4f93086a.JPG" width="90%"/>
+ <img src="https://user-images.githubusercontent.com/93129951/188328513-a193af5f-fea2-4f75-ae45-676d42dc3f1f.JPG" width="90%"/>
+ 
+## 📸 페이지
+ <img src="https://user-images.githubusercontent.com/93129951/188328515-f311f790-ae29-4995-836a-46fe8876986a.JPG" width="80%"/>
+ <img src="https://user-images.githubusercontent.com/93129951/188328517-00a9e8ed-2edb-412a-9d3d-d0c94b3ccdbc.JPG" width="80%"/>
+ <img src="https://user-images.githubusercontent.com/93129951/188328518-595055c1-d486-4209-829e-9e90b79095a8.JPG" width="80%"/>
 
--------> 3. Servers - tomcat-users.xml 전체 지우고 다음 코드 복붙
-<?xml version="1.0" encoding="UTF-8"?>
-<tomcat-users version="1.0" xmlns="http://tomcat.apache.org/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd">
-  <role rolename="admin"/>
-  <user username="admin" password="1234" roles="admin"/>
-</tomcat-users>
+## 🌟 개발 포인트
+> 매체 연동
+- iframe을 통한 Key값 교환
+> Open API
+- Nice 통신사 본인인증
+- PG사 결제(Payco, Allat)
+- SNS 간편가입 및 로그인(Kakao, Naver)
+> 정기적 결제 요청
+- Spring Boot의 스케줄러를 이용한 배치 작업 처리
+> 정책에 따른 가입요금 & 환불요금 일할 계산
+- 무료체험 기간 한달 제공 고려
+- 따라서 가입요금 및 환불요금은 사용자가 요청한 해당 일자에 따라 상이
+- package com.stock.service.impl.PaymentServiceImpl.calculateAmount 참고
+<br> 
 
--------> 4. Servers프로젝트 - server.xml </host> 태그 안에다 다음 코드 추가
-<Context docBase="C:\upload" path="/img" reloadable="true"/>
+## 📍 사용기술
+\# Java \# Spring Boot \# ApacheTomcat \# Maven \# Mybatis \# MVC \# HTML5 \# CSS3 \# JAVASCRIPT \# Tiles\
+<br> 
+
+## 💡 프로젝트 구조
+
+```
+src/main/  
+│   
+├── java/com/spring                 # 백엔드    
+│   ├─ biz/                         # Controller
+│   └─ view/                        # Model
+└── resources/                      # 리소스
+│   ├─ config/
+│   ├─ lib/        
+│   ├─ mappings/        
+│   ├─ message/    
+│   ├─ SQL/
+│   ├─ log4j.xml   
+│   └─ mybatis-config.xml
+└── webapp/                         # 프론트엔드 
+    ├─ resources/
+    ├─ WEB-INF/
+    |  ├─ spring/
+    │  |    ├─ servlet-context.xml 
+    |  |    └─ root-context.xml
+    |  ├─ views/                    #View
+    |  └─ web.xml   
+    └─  welcome.jsp
+```
